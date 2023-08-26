@@ -9,29 +9,33 @@
 }
 
 .answer {
+  margin-top: 50px;
+  padding-top: 24px;
   height: 80vh;
-  width: 70%;
-  margin: 0 auto;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 20px;
-  box-sizing: border-box;
+  /*margin: 0 auto;
+  *//*padding: 20px;
+  */box-sizing: border-box;
   border: 1px white solid;
   background-color: rgb(72, 72, 72);
-  /* overflow-x: hidden;
-  overflow-y: auto; */
   overflow-y: scroll;
+  color: #fff;
+  font-size: large;
 }
 
 .input {
-  width: 70%;
-  margin: 0 auto;
-  position: fixed;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
+  /*width: 70%;
+  *//*margin: 0 auto;
+  *//*position: fixed;
+  *//*bottom: 50px;
+  *//*left: 50%;
+  *//*transform: translateX(-50%);
+  */
+  margin-top: 40px;
   border-radius: 30px;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  -o-border-radius: 30px;
   border: none;
   height: 40px;
 }
@@ -41,7 +45,7 @@
   /* background-color: white; */
   gap: 10px;
   /* border: none; */
-  border-bottom: black 1px solid;
+  /* border-bottom: black 1px solid; */
 }
 .input__form-white{
   border-bottom: white 1px solid;
@@ -57,33 +61,25 @@
   /* border: 1px solid red; */
   font-size: 18px;
 }
-
+.input__form:active{
+  background-color: transparent;
+}
 .input__form-button {
   background-image: url(./images/send.png);
-  background-size: 65%;
+  background-size: 30%;
   background-position: center;
   background-repeat: no-repeat;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
+  width: 80px;
+  height: 50px;
+  /* border-radius: 100%; */
+  /* padding: 10px; */
+  /* border: none;
+  cursor: pointer; */
   /* border-bottom: black 1px solid; */
-  background-color: transparent;
+  /* background-color: transparent; */
 }
 .input__form-button-color{
   background-color: #2F5233;
-}
-.answer {
-  color: #fff;
-  /* padding: 10px; */
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: large;
-  display: flex;
-  flex-direction: column;
-  width: 70%;
 }
 
 .answers__list {
@@ -127,4 +123,7 @@
 .clear__button{
   width: 50px;
   height: 25px;
+}
+.answer_wrap{
+  width: 70%;
 }
