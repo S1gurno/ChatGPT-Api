@@ -8,10 +8,9 @@ const button = document.querySelector(".input__form-button");
 const input = document.querySelector(".input__form-input");
 const form = document.querySelector(".input__form");
 const messages = document.querySelector(".answers__list");
-const clear = document.querySelector(".clear__button")
+const clear = document.querySelector(".clear__button");
 let contextArray;
 
-console.log('localStorage.getItem("contextArray"): ', localStorage.getItem("contextArray"));
 contextArray = JSON.parse(localStorage.getItem("contextArray"));
 if (contextArray) {
     getMessage();
@@ -36,11 +35,7 @@ function createMessage(msg) {
     template.querySelector(".answer__time").textContent = `${hour}:${min}`;
     template.classList.add("answer__list-item");
 
-    contextArray.push({
-        message: msg,
-        time: `${hour}:${min}`,
-    });
-    localStorage.setItem("contextArray", JSON.stringify(contextArray));
+    updateArray(msg, hour, min)
 
     return template;
 }
@@ -61,19 +56,15 @@ function makeInitialRequest() {
 
     contextArray.push(botGreet)
     contextArray.push(botSettings)
-    
-    localStorage.setItem("contextArray", JSON.stringify(contextArray))
 
     Chat.getAnswer(botGreet.message, botSettings.message)
         .then((res) => {
             if (!res) throw new Error('Не смог поприветствовать, что-то не так');
             postMessage(createMessage(res));
             const { hour, min } = getCurrentTime();
-            contextArray.push({
-                message: res,
-                time: `${hour}:${min}`
-            })
-            localStorage.setItem("contextArray", JSON.stringify(contextArray));
+            
+            updateArray(msg, hour, min)
+            
         })
         .catch(err => console.log(err))
 }
@@ -91,6 +82,20 @@ function getMessage() {
         }
 
     })
+}
+
+function updateArray(msg, hour, min) {
+    if (!contextArray.find((item) => {
+        console.log(item);
+        return item.message === msg;
+    })) {
+        contextArray.push({
+            message: msg,
+            time: `${hour}:${min}`,
+        });
+        localStorage.setItem("contextArray", JSON.stringify(contextArray));
+    
+    }
 }
 
 

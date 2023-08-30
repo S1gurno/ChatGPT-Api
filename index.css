@@ -1,11 +1,22 @@
+:root{
+  --bot-color: #f492f0;
+  --user-color: #f9c58d;
+}
+
+
 .main {
-  background-color: grey;
+  /* background-color: grey; */
   height: 90vh;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   font-family: Arial, sans-serif;
+  background: #314755;  
+  background: -webkit-linear-gradient(to right, var(--user-color), var(--bot-color));  
+  background: linear-gradient(to right, var(--user-color), var(--bot-color));
+  
+
 }
 
 .answer {
@@ -18,10 +29,10 @@
   padding: 20px;
   box-sizing: border-box;
   border: 1px white solid;
-  background-color: rgb(72, 72, 72);
-  /* overflow-x: hidden;
-  overflow-y: auto; */
+  background: -webkit-linear-gradient(to right, var(--user-color), var(--bot-color));  
+  background: linear-gradient(to right, var(--user-color),  var(--bot-color));
   overflow-y: scroll;
+  
 }
 
 .input {
@@ -100,22 +111,24 @@
   margin-bottom: 15px;
   padding-bottom: 5px;
   padding-left: 10px;
-  background-color: #2F5233;
+  background-color: var(--bot-color);
   padding: 15px 20px;
   max-width: 60%;
   border-radius: 10px;
   /* width: min-content; */
   align-self: flex-start;
   min-width: 300px;
+  color: black;
 
 }
 
 .answer__list-item-user {
   /* text-align: right; */
-  background-color: grey;
+  background-color: var(--user-color);
   border-radius: 10px;
   max-width: 60%;
   align-self: end;
+  color: black;
 
 }
 
