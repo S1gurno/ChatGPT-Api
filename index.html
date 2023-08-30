@@ -5,48 +5,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="index.css">
-    <!-- <script asinc src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script> -->
     <script type="module" src="./scripts/index.js"></script>
-    <!-- <script defer type="module" src="./scripts/modalWindow.js"></script> -->
 </head>
-<body class="main">
-    <button type="button" class="clear__button">Clear</button>
-    <div class="answer">
-        <ul class="answers__list"></ul>
+<body class="container main">
+    <div class="container row xs-6">
+        <div class="row answer">
+            <div class="col">
+                <ul class="answers__list col col-xs"></ul>
+            </div>
+        </div>
+        <div class="row input">
+            <form class="container input__form">
+                <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
+                <input class="input__form-input form-control" type="text" placeholder="Your text">
+                <!-- <input type="text" class="input__form-input row-xs"> -->
+                <button id="sendButton" type="submit" class="input__form-button btn btn-success"></button>
+            </form>
+        </div>
     </div>
-    <div class="input">
-        <form class="input__form">
-            <input type="text" class="input__form-input">
-            <button type="submit" class="input__form-button"></button>
-        </form>
-    </div>
-    <template class="template">
-        <li class="answer__list-item">
+    <template class="template container">
+        <li class="answer__list-item xs-6">
             <p class="answer__text"></p>
             <p class="answer__time"></p>
         </li>
     </template>
 
-    <!-- <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="errorModalTitle">Modal title</h1>
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="errorModalBody">
-              
+            <div class="modal-body">
+              ...
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="errorModalClose">Close</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
 </body>
 </html>
-
-
-<!-- Дз: Доделать дезигн. (Опционально) исправить баг с сменой мест сообщений при обновлении страницы -->
