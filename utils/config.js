@@ -1,4 +1,4 @@
 
-const key = "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";
+const key = "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";
 
 export { key }
