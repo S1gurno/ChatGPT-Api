@@ -1,7 +1,16 @@
 export default function getCurrentTime() {
     const date = new Date();
-    const hour = date.getHours();
-    const min = date.getMinutes();
+    let hour = date.getHours();
+    let min = date.getMinutes();
+
+    if (hour < 10) {
+        hour = `0${hour}`;
+    }
+
+    if (min < 10) {
+        min = `0${min}`;
+    }
+    
     return {
         hour,
         min,

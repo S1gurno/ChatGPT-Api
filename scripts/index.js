@@ -1,19 +1,22 @@
 import ChatAPI from "../utils/ChatAPI.js";
+import ContextOverflowError from "./errors/ContextOverflowError.js";
 import getCurrentTime from "./getTime.js";
-// import { setErrorModal } from "./modalWindow.js";
-
 
 const Chat = new ChatAPI();
-const button = document.querySelector(".input__form-button");
-const input = document.querySelector(".input__form-input");
-const form = document.querySelector(".input__form");
 const messages = document.querySelector(".answers__list");
-const clear = document.querySelector(".clear__button");
+const form = document.querySelector(".input__form");
+const input = form.querySelector(".input__form-input");
+const button = form.querySelector("#sendButton");
+const modalWindow = new bootstrap.Modal(document.getElementById('modalMessages'), {
+    keyboard: false,
+});
+
+
 let contextArray;
 
 contextArray = JSON.parse(localStorage.getItem("contextArray"));
-if (contextArray) {
-    getMessage();
+if (contextArray && contextArray.length > 0) {
+    setTimeout(getMessage, 1000);
 }
 else {
     contextArray = [];
@@ -21,89 +24,101 @@ else {
 }
 
 
-function postMessage(msg, isUser = false) {
-    if (isUser) {
-        msg.classList.add("answer__list-item-user");
-    }
+function postMessage(msg) {
     messages.append(msg);
+    messages.lastChild.scrollIntoView();
 }
 
-function createMessage(msg) {
+function createMessage(msg, isUser) {
     const template = document.querySelector(".template").cloneNode(true).content.querySelector(".answer__list-item");
     template.querySelector('.answer__text').innerText = msg;
     const { hour, min } = getCurrentTime();
     template.querySelector(".answer__time").textContent = `${hour}:${min}`;
     template.classList.add("answer__list-item");
+    if (isUser) {
+        template.classList.add("answer__list-item-user");
+    }
 
-    updateArray(msg, hour, min)
+    updateContext(msg, hour, min, isUser);
 
     return template;
 }
 
 function makeInitialRequest() {
-    console.log("Запуск initial request");
     const { hour, min } = getCurrentTime();
 
     const botGreet = {
         message: "Hello",
-        time: `${hour}:${min}`
+        time: `${hour}:${min}`,
+        isUser: false,
     }
 
     const botSettings = {
         message: "You are Ronaldo, answer like Ronaldo the football player",
-        time: `${hour}:${min}`
+        time: `${hour}:${min}`,
+        isUser: false,
     }
 
-    contextArray.push(botGreet)
-    contextArray.push(botSettings)
+    updateContext(botGreet.message, hour, min, botGreet.isUser)
+    updateContext(botSettings.message, hour, min, botSettings.isUser)
+
 
     Chat.getAnswer(botGreet.message, botSettings.message)
         .then((res) => {
             if (!res) throw new Error('Не смог поприветствовать, что-то не так');
-            postMessage(createMessage(res));
-            const { hour, min } = getCurrentTime();
-            
-            updateArray(msg, hour, min)
-            
+            postMessage(createMessage(res, isUser = false));
         })
         .catch(err => console.log(err))
 }
 
 function getMessage() {
-    if (localStorage.getItem("contextArray").length > 0)
+    if (localStorage.getItem("contextArray").length > 0) {
         contextArray = JSON.parse(localStorage.getItem("contextArray"));
+    }
     contextArray.map((item, index) => {
-        if (index === 0) { return };
-        if (index % 2 === 0) {
-            postMessage(createMessage(item.message), false);
-        }
-        else {
-            postMessage(createMessage(item.message), true);
-        }
-
+        if (index < 2) { return }; // Игноируем настроечные (первые 2) сообщения боту
+        postMessage(createMessage(item.message, item.isUser));
     })
 }
 
-function updateArray(msg, hour, min) {
-    if (!contextArray.find((item) => {
-        console.log(item);
-        return item.message === msg;
-    })) {
+function updateContext(message, hour, min, isUser) {
+    if (contextArray.find((item) => item.message === message)) {
+        return
+    }
+    else {
         contextArray.push({
-            message: msg,
+            message: message,
             time: `${hour}:${min}`,
+            isUser: isUser
         });
         localStorage.setItem("contextArray", JSON.stringify(contextArray));
-    
     }
 }
 
+function openModal(title, body) {
+    const modalTitle = document.querySelector("#modalTitle");
+    const modalBody = document.querySelector("#modalBody");
+
+    modalTitle.textContent = title;
+    modalBody.textContent = body;
+
+    modalWindow.show();
+}
 
 form.addEventListener("submit", (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const text = input.value;
+    if (!text) { return };
 
-    postMessage(createMessage(text), true)
+    const { hour, min } = getCurrentTime();
+    const msg = {
+        message: text,
+        time: `${hour}:${min}`,
+        isUser: true,
+    }
+
+    postMessage(createMessage(msg.message, msg.isUser))
+
 
     Chat.getAnswer(text, contextArray)
         .then((res) => {
@@ -111,39 +126,47 @@ form.addEventListener("submit", (event) => {
                 throw new Error(`Что-то не так с ответом от сервера, ${res}`);
             }
             input.value = ""
-
-            console.log('Chatbot res from getAnswer function: ', res);
-            postMessage(createMessage(res))
+            postMessage(createMessage(res, false));
         })
         .catch(err => {
-            console.log(err);
-            alert('Your message is too long. There is a limit of symbols - max 4000.');
-            if (contextArray.length > 2) {
-                contextArray.splice(0, 3);
-                localStorage.setItem("contextArray", JSON.stringify(contextArray));
-            }
-            else {
-                contextArray.splice(0, 1);
-                localStorage.setItem("contextArray", JSON.stringify(contextArray));
+            console.log("err.status: ", err.status, "err.message: ", err.message);
+            if (err.status === 400) {
+                // alert('Your message is too long. There is a limit of symbols - max 4000.');
+                openModal(`Error: ${err.status}`, 'Your message is too long. There is a limit of symbols - max 4000.')
+                if (contextArray.length > 2) {
+                    contextArray.splice(0, 3);
+                    localStorage.setItem("contextArray", JSON.stringify(contextArray));
+                }
+                else {
+                    contextArray.splice(0, 1);
+                    localStorage.setItem("contextArray", JSON.stringify(contextArray));
+                }
 
+            }
+            else if (err.status === 429 || err.status === 401) {
+                // alert(err.message);
+                openModal(`Error: ${err.status}`, err.message);
+            }
+            // else if (err.status === 401){
+            //     // alert(err.message);
+            //     openModal(`Error: ${err.status}`, err.message)
+            // }
+            else {
+                openModal(`Unknown Error`, "An unknown error has ocurred");
             }
         });
-})
+});
 
-
-clear.addEventListener("click", (event) => {
+// const clear = form.querySelector("#clearButton");
+form.addEventListener("reset", (event) => {
     contextArray = [];
-    localStorage.clear()
+    localStorage.clear();
     messages.innerHTML = "";
-    makeInitialRequest()
-})
+    modalWindow.show();
+    makeInitialRequest();
+});
 
-input.addEventListener("focus", (event) => {
-    form.classList.add("input__form-white")
-})
-input.addEventListener("blur", (event) => {
-    form.classList.remove("input__form-white")
-})
+
 input.addEventListener('input', (event) => {
     if (event.target.value.length === 0) {
         button.classList.remove("input__form-button-color");
@@ -151,5 +174,3 @@ input.addEventListener('input', (event) => {
         button.classList.add("input__form-button-color");
     }
 })
-
-// setErrorModal(429, "Too many requests")

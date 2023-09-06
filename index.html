@@ -18,7 +18,7 @@
         </div>
         <div class="row input">
             <form class="container input__form">
-                <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
+                <button id="clearButton" class="btn btn-danger" type="reset">Clear</button>
                 <input class="input__form-input form-control" type="text" placeholder="Your text">
                 <!-- <input type="text" class="input__form-input row-xs"> -->
                 <button id="sendButton" type="submit" class="input__form-button btn btn-success"></button>
@@ -32,15 +32,15 @@
         </li>
     </template>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalMessages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h1 class="modal-title fs-5" id="modalTitle">Круто</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Ok</button>
             </div>
-            <div class="modal-body">
-              ...
+            <div class="modal-body" id="modalBody">
+              Контекст очищен
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
