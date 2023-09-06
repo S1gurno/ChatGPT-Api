@@ -7,6 +7,10 @@ const messages = document.querySelector(".answers__list");
 const form = document.querySelector(".input__form");
 const input = form.querySelector(".input__form-input");
 const button = form.querySelector("#sendButton");
+const modalWindow = new bootstrap.Modal(document.getElementById('modalMessages'), {
+    keyboard: false,
+});
+
 
 let contextArray;
 
@@ -34,7 +38,7 @@ function createMessage(msg, isUser) {
     if (isUser) {
         template.classList.add("answer__list-item-user");
     }
-    
+
     updateContext(msg, hour, min, isUser);
 
     return template;
@@ -62,7 +66,7 @@ function makeInitialRequest() {
     Chat.getAnswer(botGreet.message, botSettings.message)
         .then((res) => {
             if (!res) throw new Error('Не смог поприветствовать, что-то не так');
-            postMessage(createMessage(res, isUser=false));
+            postMessage(createMessage(res, isUser = false));
         })
         .catch(err => console.log(err))
 }
@@ -77,11 +81,11 @@ function getMessage() {
     })
 }
 
-function updateContext(message, hour, min, isUser){
-    if (contextArray.find((item) => item.message === message)){
+function updateContext(message, hour, min, isUser) {
+    if (contextArray.find((item) => item.message === message)) {
         return
     }
-    else{
+    else {
         contextArray.push({
             message: message,
             time: `${hour}:${min}`,
@@ -89,6 +93,16 @@ function updateContext(message, hour, min, isUser){
         });
         localStorage.setItem("contextArray", JSON.stringify(contextArray));
     }
+}
+
+function openModal(title, body) {
+    const modalTitle = document.querySelector("#modalTitle");
+    const modalBody = document.querySelector("#modalBody");
+
+    modalTitle.textContent = title;
+    modalBody.textContent = body;
+
+    modalWindow.show();
 }
 
 form.addEventListener("submit", (event) => {
@@ -112,39 +126,43 @@ form.addEventListener("submit", (event) => {
                 throw new Error(`Что-то не так с ответом от сервера, ${res}`);
             }
             input.value = ""
-            postMessage(createMessage(res, false))
-
+            postMessage(createMessage(res, false));
         })
         .catch(err => {
+            console.log("err.status: ", err.status, "err.message: ", err.message);
             if (err.status === 400) {
-                alert('Your message is too long. There is a limit of symbols - max 4000.');
+                // alert('Your message is too long. There is a limit of symbols - max 4000.');
+                openModal(`Error: ${err.status}`, 'Your message is too long. There is a limit of symbols - max 4000.')
                 if (contextArray.length > 2) {
                     contextArray.splice(0, 3);
                     localStorage.setItem("contextArray", JSON.stringify(contextArray));
-                } 
+                }
                 else {
                     contextArray.splice(0, 1);
                     localStorage.setItem("contextArray", JSON.stringify(contextArray));
                 }
+
             }
-            else if (err.status === 429){
-                alert(err.message);
+            else if (err.status === 429 || err.status === 401) {
+                // alert(err.message);
+                openModal(`Error: ${err.status}`, err.message);
             }
-            else if (err.status === 401){
-                alert(err.message);
+            // else if (err.status === 401){
+            //     // alert(err.message);
+            //     openModal(`Error: ${err.status}`, err.message)
+            // }
+            else {
+                openModal(`Unknown Error`, "An unknown error has ocurred");
             }
         });
 });
 
 // const clear = form.querySelector("#clearButton");
 form.addEventListener("reset", (event) => {
-    console.log('Очистка: ', event);
-    // event.preventDefault();
-    // ДЗ: Починить кнопку очистки контекста
-    console.log('Очистка: ', event);
     contextArray = [];
     localStorage.clear();
     messages.innerHTML = "";
+    modalWindow.show();
     makeInitialRequest();
 });
 

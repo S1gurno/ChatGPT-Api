@@ -1,5 +1,8 @@
 import { Configuration, CreateImageRequestResponseFormatEnum, OpenAIApi } from "openai";
-import { key } from "../utils/config.js";
+import AuthError from "../scripts/errors/AuthError.js";
+import ContextOverflowError from "../scripts/errors/ContextOverflowError.js";
+import RequestOverflowError from "../scripts/errors/RequestOverflow.js";
+import { key } from "./config.js";
 
 
 class ChatAPI {
@@ -12,7 +15,7 @@ class ChatAPI {
     }
 
     async getAIResponse(text, context) {
-        const res = await this.openai.createChatCompletion({
+        return this.openai.createChatCompletion({
             model: this.model,
             messages: [
                 {
@@ -24,24 +27,33 @@ class ChatAPI {
                     content: text,
                 }
             ],
-        });
-        if (!res) {
-            console.log('Что-то не так с запросом к серверу:', err?.error, err?.message);
-            return;
-        }
-
-        // console.log('res: ', res);
-        return res;
+        })
+            .then((res) => {
+                console.log('res: ', res);
+                if (res) {
+                    return res;
+                }
+            })
+            .catch((err) => {
+                console.debug("error: ", err.response);
+                return err.response;
+            })
     }
 
     async getAnswer(text, context) {
         if (text && context) {
             const answer = await this.getAIResponse(text, this.__arrayToString(context));
-
-            if (!answer) {
-                console.log('Что-то пошло не так.', answer);
-                return;
+            
+            if (answer.status == 429){
+                throw new RequestOverflowError("Exceeded the amount of requests per minute");
             }
+            else if(answer.status == 401){
+                throw new AuthError("You need a token from the API");
+            }
+            else if(answer.status == 400){
+                throw new ContextOverflowError("Exceeded the token limit. 4097 tokens allowed");
+            }
+            
             return answer.data.choices[0].message.content;
         }
     }
