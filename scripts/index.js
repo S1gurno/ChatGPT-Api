@@ -131,7 +131,6 @@ form.addEventListener("submit", (event) => {
         .catch(err => {
             console.log("err.status: ", err.status, "err.message: ", err.message);
             if (err.status === 400) {
-                // alert('Your message is too long. There is a limit of symbols - max 4000.');
                 openModal(`Error: ${err.status}`, 'Your message is too long. There is a limit of symbols - max 4000.')
                 if (contextArray.length > 2) {
                     contextArray.splice(0, 3);
@@ -144,20 +143,14 @@ form.addEventListener("submit", (event) => {
 
             }
             else if (err.status === 429 || err.status === 401) {
-                // alert(err.message);
                 openModal(`Error: ${err.status}`, err.message);
             }
-            // else if (err.status === 401){
-            //     // alert(err.message);
-            //     openModal(`Error: ${err.status}`, err.message)
-            // }
             else {
                 openModal(`Unknown Error`, "An unknown error has ocurred");
             }
         });
 });
 
-// const clear = form.querySelector("#clearButton");
 form.addEventListener("reset", (event) => {
     contextArray = [];
     localStorage.clear();
